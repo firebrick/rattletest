@@ -1,12 +1,21 @@
+import os
+
+import dj_database_url
+
 from .base import *  # noqa
 from .base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env("DJANGO_SECRET_KEY")
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["example.com"])
+DIVIO_DOMAIN = os.environ.get("DOMAIN", "")
+DIVIO_DOMAIN_ALIASES = [
+    d.strip() for d in os.environ.get("DOMAIN_ALIASES", "").split(",") if d.strip()
+]
+ALLOWED_HOSTS = [DIVIO_DOMAIN] + DIVIO_DOMAIN_ALIASES
+
 
 # DATABASES
 # ------------------------------------------------------------------------------
@@ -16,13 +25,21 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["example.com"])
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
-DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgres://localhost/rattletest"),
-}
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
-DATABASES["default"] = env.db("DATABASE_URL")  # noqa F405
-DATABASES["default"]["ATOMIC_REQUESTS"] = True  # noqa F405
-DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)  # noqa F405
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.environ.get("DB_NAME"),
+#         "USER": os.environ.get("DB_USER"),
+#         "PASSWORD": os.environ.get("DB_PWD"),
+#         "HOST": os.environ.get("DB_HOST"),
+#         "PORT": "5432",
+#         "ATOMIC_REQUESTS": True,
+#         "CONN_MAX_AGE": 60,
+#     }
+# }
+DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite://:memory:")
+
+DATABASES = {"default": dj_database_url.parse(DATABASE_URL)}
 
 # CACHES
 # ------------------------------------------------------------------------------
@@ -86,13 +103,13 @@ TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
-DEFAULT_FROM_EMAIL = env(
+DEFAULT_FROM_EMAIL = os.environ.get(
     "DJANGO_DEFAULT_FROM_EMAIL", default="rattletest <noreply@example.com>"
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
-SERVER_EMAIL = env("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
+SERVER_EMAIL = os.environ.get("DJANGO_SERVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
-EMAIL_SUBJECT_PREFIX = env(
+EMAIL_SUBJECT_PREFIX = os.environ.get(
     "DJANGO_EMAIL_SUBJECT_PREFIX",
     default="[rattletest]",
 )
@@ -103,20 +120,22 @@ EMAIL_SUBJECT_PREFIX = env(
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
 # https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
 # https://anymail.readthedocs.io/en/stable/esps/mailgun/
-DEFAULT_FROM_EMAIL = env(
+DEFAULT_FROM_EMAIL = os.environ.get(
     "DJANGO_DEFAULT_FROM_EMAIL", default="rattletest <noreply@example.com>"
 )
 EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 ANYMAIL = {
-    "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),
-    "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN"),
-    "MAILGUN_API_URL": env("MAILGUN_API_URL", default="https://api.mailgun.net/v3"),
+    "MAILGUN_API_KEY": os.environ.get("MAILGUN_API_KEY"),
+    "MAILGUN_SENDER_DOMAIN": os.environ.get("MAILGUN_SENDER_DOMAIN"),
+    "MAILGUN_API_URL": os.environ.get(
+        "MAILGUN_API_URL", default="https://api.mailgun.net/v3"
+    ),
 }
 
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL regex.
-ADMIN_URL = env("DJANGO_ADMIN_URL")
+ADMIN_URL = os.environ.get("DJANGO_ADMIN_URL")
 
 
 # LOGGING
