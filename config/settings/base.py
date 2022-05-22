@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+import os
 from pathlib import Path
 
 import environ
@@ -21,7 +22,8 @@ env.read_env(str(ROOT_DIR / ".env"))
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-DEBUG = env.bool("DJANGO_DEBUG", False)
+DEBUG = os.environ.get("DJANGO_DEBUG", False)
+
 # Local time zone. Choices are
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
@@ -223,7 +225,7 @@ EMAIL_TIMEOUT = 5
 # ADMIN
 # ------------------------------------------------------------------------------
 # Django Admin URL.
-ADMIN_URL = "admin/"
+ADMIN_URL = "adm1n/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
 ADMINS = [("""H D""", "hireshdqa06@gmail.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
@@ -277,8 +279,8 @@ SOCIALACCOUNT_PROVIDERS = {
         # (``socialaccount`` app) containing the required client
         # credentials, or list them here:
         "APP": {
-            "client_id": env("CLIENT_ID_GITHUB"),
-            "secret": env("CLIENT_SECRET_GITHUB"),
+            "client_id": os.environ.get("CLIENT_ID_GITHUB"),
+            "secret": os.environ.get("CLIENT_SECRET_GITHUB"),
             "key": "",
         },
         # 'SCOPE': {
@@ -292,8 +294,8 @@ SOCIALACCOUNT_PROVIDERS = {
         # (``socialaccount`` app) containing the required client
         # credentials, or list them here:
         "APP": {
-            "client_id": env("CLIENT_ID_GITHUB"),
-            "secret": env("CLIENT_SECRET_GITLAB"),
+            "client_id": os.environ.get("CLIENT_ID_GITLAB"),
+            "secret": os.environ.get("CLIENT_SECRET_GITLAB"),
             "key": "",
         }
     },
