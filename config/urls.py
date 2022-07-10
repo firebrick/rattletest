@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from .settings.base import ADMIN_URL, MEDIA_URL, DEBUG
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -11,16 +12,16 @@ urlpatterns = [
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),
     # Django Admin, use {% url 'admin:index' %}
-    path("abc/" + settings.ADMIN_URL, admin.site.urls),
+    path("abc/" + ADMIN_URL, admin.site.urls),
     # User management
     path("users/", include("rattletest.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     path("", include("projects.urls"), name="project"),
     path("", include("testcases.urls"), name="testcase"),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-if settings.DEBUG:
+if DEBUG:
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
     urlpatterns += [

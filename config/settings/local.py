@@ -1,3 +1,4 @@
+import os
 from .base import *  # noqa
 from .base import ROOT_DIR, env
 
@@ -6,10 +7,11 @@ from .base import ROOT_DIR, env
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
-SECRET_KEY = env(
-    "DJANGO_SECRET_KEY",
-    default="9SXGn2jRxa4pstXJJbbJW6ZM5Nj1Zj6TQ6iF88NmhUBVXRYrqUUN7JTLQmZlZGvM",
-)
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+# os.environ.get(
+#     "DJANGO_SECRET_KEY",
+#     default="9SXGn2jRxa4pstXJJbbJW6ZM5Nj1Zj6TQ6iF88NmhUBVXRYrqUUN7JTLQmZlZGvM",
+# )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "devurl"]
 
